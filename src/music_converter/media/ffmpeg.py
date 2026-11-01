@@ -107,7 +107,9 @@ class ToolPaths:
 
         ffmpeg = _first_existing(ffmpeg_candidates) or _which("ffmpeg")
         ffprobe = _first_existing(ffprobe_candidates) or _which("ffprobe")
-        mac = _first_existing(mac_candidates) or _which("mac")
+        mac = None
+        if os.name == "nt":
+            mac = _first_existing(mac_candidates) or _which("mac")
         return cls(ffmpeg=ffmpeg, ffprobe=ffprobe, mac=mac)
 
 
@@ -409,7 +411,7 @@ class MonkeysAudio:
     @property
     def available(self) -> bool:
         """Return whether ``MAC.exe`` is available."""
-        return bool(self.tools.mac and self.tools.mac.is_file())
+        return bool(os.name == "nt" and self.tools.mac and self.tools.mac.is_file())
 
     def encode(
         self,
@@ -419,7 +421,7 @@ class MonkeysAudio:
         compression_level: int = 2000,
     ) -> Path:
         """Encode a WAV file to APE and add basic APEv2 tags."""
-        if not self.tools.mac or not self.tools.mac.is_file():
+        if os.name != "nt" or not self.tools.mac or not self.tools.mac.is_file():
             raise ToolError("未找到 Monkey's Audio MAC.exe，无法输出 APE。")
         destination.parent.mkdir(parents=True, exist_ok=True)
         tag_parts = [
