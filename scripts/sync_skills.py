@@ -31,12 +31,15 @@ def main() -> int:
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parents[1]
-    canonical = project_root / ".agents" / "skills" / "music-format-converter"
+    canonical = project_root / "skills" / "music-format-converter"
     if not (canonical / "SKILL.md").is_file():
         raise SystemExit(f"Canonical skill is missing: {canonical}")
 
-    _sync(canonical, project_root / ".claude" / "skills" / "music-format-converter")
-    print(f"Synchronized Claude project skill: {canonical}")
+    project_agents = project_root / ".agents" / "skills" / "music-format-converter"
+    project_claude = project_root / ".claude" / "skills" / "music-format-converter"
+    _sync(canonical, project_agents)
+    _sync(canonical, project_claude)
+    print(f"Synchronized project Skills from: {canonical}")
 
     if args.user:
         home = Path.home()

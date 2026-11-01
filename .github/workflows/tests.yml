@@ -30,4 +30,4 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: |
           python -m pytest --basetemp .tmp\pytest-run
-          ruff check src tests app.py launcher.py scripts
+          ruff check src tests app.py launcher.py scripts packaging

@@ -15,6 +15,8 @@ This project uses and distributes the following third-party components. Their ow
 | Noto Sans SC / Noto Serif SC | Google Fonts variable builds | Bundled Chinese UI typography | SIL Open Font License 1.1, https://fonts.google.com/noto |
 | ncmdump-py | 1.1.6 | NCM format reference; adapted under MIT | https://github.com/ww-rm/ncmdump-py |
 | LRCLIB | API service | Online lyrics matching | https://lrclib.net/docs |
+| PyInstaller | 6.22.3 | Windows/Linux binary packaging | GPL-2.0-or-later with bootloader exception, https://pyinstaller.org/ |
+| Inno Setup | 6.7.3 | Windows installer build tool | Inno Setup License, https://jrsoftware.org/isinfo.php |
 
 ## Bundled binary hashes
 
@@ -26,5 +28,5 @@ This project uses and distributes the following third-party components. Their ow
 | `assets/fonts/NotoSansSC-Variable.ttf` | `A3041811A78C361B1DE50F953C805E0244951C21C5BD412F7232EF0D899AF0DA` |
 | `assets/fonts/NotoSerifSC-Variable.ttf` | `050080D9255A86808F2945BFFAC582B31EF32BC36411CE29563B4961670C66F9` |
 
-The complete FFmpeg license is stored at `tools/ffmpeg/LICENSE`. The Monkey's Audio license is stored at `tools/monkeys-audio/License.txt`. Font licenses are stored under `assets/fonts/`.
+The complete FFmpeg license is stored at `tools/ffmpeg/LICENSE`. The Monkey's Audio license is stored at `tools/monkeys-audio/License.txt`. Font licenses are stored under `assets/fonts/`. The PyInstaller license is stored at `licenses/PyInstaller-COPYING.txt`, and the Inno Setup build-tool license at `packaging/windows/InnoSetup-LICENSE.txt`.
 

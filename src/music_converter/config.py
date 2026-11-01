@@ -3,10 +3,42 @@
 from __future__ import annotations
 
 import os
+import sys
 import tempfile
 from pathlib import Path
 
 APP_NAME = "MusicFormatConverter"
+
+
+def is_frozen() -> bool:
+    """Return whether the application is running from a PyInstaller bundle."""
+    return bool(getattr(sys, "frozen", False))
+
+
+def application_root() -> Path:
+    """Return the source checkout or installed application directory."""
+    if is_frozen():
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parents[2]
+
+
+def resource_root() -> Path:
+    """Return the root containing bundled read-only resources."""
+    if is_frozen():
+        return Path(getattr(sys, "_MEIPASS", application_root())).resolve()
+    return application_root()
+
+
+def skill_source_dir() -> Path:
+    """Return the canonical Skill directory bundled with source or binaries."""
+    candidates = [
+        resource_root() / "skills" / "music-format-converter",
+        application_root() / "skills" / "music-format-converter",
+    ]
+    for candidate in candidates:
+        if (candidate / "SKILL.md").is_file():
+            return candidate
+    return candidates[0]
 
 
 def _is_writable_directory(path: Path) -> bool:
@@ -31,7 +63,7 @@ def app_data_dir() -> Path:
         if not _is_writable_directory(base):
             raise PermissionError(f"数据目录不可写：{base}")
     except OSError:
-        base = Path(__file__).resolve().parents[2] / ".music-converter-data"
+        base = application_root() / ".music-converter-data"
         base.mkdir(parents=True, exist_ok=True)
         if not _is_writable_directory(base):
             base = Path(tempfile.gettempdir()) / APP_NAME

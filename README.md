@@ -8,9 +8,10 @@
 
 ## 环境要求
 
-- Windows 10/11 x64
-- Python 3.12 或更高版本，推荐 Python 3.14
-- 首次安装时需要联网下载 Python 依赖和 FFmpeg
+- Windows 10/11 x64，或带桌面环境的 Linux x86_64。
+- Windows 安装包和 Linux tar 包已包含 Python 运行时。
+- Linux 使用系统提供的 FFmpeg，或自行将 FFmpeg 加入 `PATH`。
+- 源码开发和重新打包需要 Python 3.12+，推荐 Python 3.14。
 
 ## 功能
 
@@ -23,9 +24,59 @@
 - NCM 音频分块解密，解密后必须通过 FFprobe 验证。
 - 提供无界面 CLI 及 Codex、Claude Code、DeepSeek Harness 共用 Skill。
 
-## 启动
+## 安装
 
-克隆仓库后，首次安装或修复：
+### Windows
+
+从 [Releases](https://github.com/wwlswj/music-format-converter/releases/latest) 下载：
+
+```text
+ShaoLv-Music-Converter-Setup-<version>.exe
+```
+
+运行安装程序，无需管理员权限。安装向导可选择同时启用：
+
+- Codex Skill
+- DeepSeek Harness Skill
+- Claude Code Skill
+
+安装完成后可从开始菜单或桌面启动客户端。
+
+当前发布包未使用商业代码签名证书，Windows SmartScreen 可能显示“未知发布者”。请核对 Release 中的 `SHA256SUMS.txt`。
+
+### Linux
+
+下载对应版本的：
+
+```text
+shao-lv-music-converter-<version>-linux-x86_64.tar.gz
+```
+
+然后安装到用户目录：
+
+```bash
+tar -xzf shao-lv-music-converter-*.tar.gz
+cd shao-lv-music-converter-*-linux-x86_64
+./install.sh
+```
+
+如系统尚未安装 FFmpeg，请先执行：
+
+```bash
+sudo apt install ffmpeg libegl1 libxkbcommon-x11-0 libxcb-cursor0
+```
+
+安装位置：
+
+```text
+~/.local/share/shao-lv
+~/.local/bin/shao-lv
+~/.local/bin/music-converter
+```
+
+Linux 版支持 APE 解码，但不支持 APE 输出，因为 APE 编码器是 Windows 可执行程序。
+
+### 源码安装
 
 ```powershell
 git clone https://github.com/wwlswj/music-format-converter.git
@@ -34,7 +85,7 @@ Set-ExecutionPolicy -Scope Process Bypass
 .\setup.ps1
 ```
 
-`setup.ps1` 会创建 `.venv`、安装 Python 依赖、下载固定版本 FFmpeg、校验 SHA-256，并生成本机启动快捷方式。
+`setup.ps1` 会创建 `.venv`、安装依赖、下载固定版本 FFmpeg、校验 SHA-256，并生成本机启动快捷方式。
 
 启动界面：
 
@@ -86,19 +137,62 @@ Set-ExecutionPolicy -Scope Process Bypass
 权威 Skill 位于：
 
 ```text
-.agents/skills/music-format-converter/
+skills/music-format-converter/
 ```
 
-同步 Claude Code 项目级 Skill：
+### 通过 CC Switch 安装
+
+1. 打开 CC Switch 的 Skills 页面。
+2. 选择“管理仓库”并添加：
+
+   ```text
+   仓库：wwlswj/music-format-converter
+   分支：main
+   Skills 路径：skills
+   ```
+
+3. 在 Discover 中找到 `music-format-converter`。
+4. 在 “Install to” 中选择 Codex、DeepSeek Harness 或 Claude Code，也可选择多个。
+5. 点击安装。
+
+也可以在 CC Switch 中选择 “Install from ZIP”，安装 Release 中的：
+
+```text
+music-format-converter-skill-<version>.zip
+```
+
+### 独立一键安装
+
+Windows 安装包内和 GitHub Release 均提供三个独立入口：
+
+```text
+install-codex-skill.cmd
+install-deepseek-skill.cmd
+install-claude-skill.cmd
+```
+
+Linux tar 包内提供：
+
+```text
+install-codex-skill.sh
+install-deepseek-skill.sh
+install-claude-skill.sh
+```
+
+也可以直接使用 CLI：
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\ShaoLv\music-converter.exe" skill install --target codex
+& "$env:LOCALAPPDATA\Programs\ShaoLv\music-converter.exe" skill install --target deepseek
+& "$env:LOCALAPPDATA\Programs\ShaoLv\music-converter.exe" skill install --target claude
+```
+
+使用 `--scope project` 可安装到当前项目的 Harness 目录。
+
+源码开发者同步仓库中的两个项目级镜像：
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\sync_skills.py
-```
-
-同时安装到用户级目录：
-
-```powershell
-.\.venv\Scripts\python.exe scripts\sync_skills.py --user
 ```
 
 目标目录：

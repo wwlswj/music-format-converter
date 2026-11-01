@@ -1042,6 +1042,7 @@ class MainWindow(QMainWindow):
             doctor = FFmpeg().doctor()
         except Exception:
             doctor = {"ffmpeg_ready": False, "ape_output_ready": False}
+        self._apply_format_capabilities(doctor)
         if doctor.get("ffmpeg_ready"):
             suffix = " · APE 可用" if doctor.get("ape_output_ready") else ""
             self.tool_pill.setText(f"本地工具已就绪{suffix}")
@@ -1059,6 +1060,7 @@ class MainWindow(QMainWindow):
     def _check_environment(self) -> None:
         """Refresh and display detailed tool readiness."""
         doctor = FFmpeg().doctor()
+        self._apply_format_capabilities(doctor)
         lines = [
             f"FFmpeg：{doctor.get('ffmpeg') or '未找到'}",
             f"FFprobe：{doctor.get('ffprobe') or '未找到'}",
@@ -1072,6 +1074,24 @@ class MainWindow(QMainWindow):
         ]
         self.environment_label.setText("\n".join(lines))
         self._initial_environment_check()
+
+    def _apply_format_capabilities(self, doctor: dict) -> None:
+        """Disable output formats that the current platform cannot encode."""
+        available = doctor.get("formats", {})
+        selected_data = self.format_combo.currentData()
+        selected_disabled = False
+        for index in range(self.format_combo.count()):
+            output_format = self.format_combo.itemData(index)
+            supported = bool(available.get(output_format, False))
+            item = self.format_combo.model().item(index)
+            if item:
+                item.setEnabled(supported)
+            if output_format == selected_data and not supported:
+                selected_disabled = True
+        if selected_disabled:
+            mp3_index = self.format_combo.findData("mp3")
+            if mp3_index >= 0:
+                self.format_combo.setCurrentIndex(mp3_index)
 
     def _load_settings(self) -> None:
         """Load persisted UI values."""

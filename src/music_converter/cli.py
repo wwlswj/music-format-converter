@@ -21,6 +21,11 @@ from music_converter.models import (
     OverwritePolicy,
 )
 from music_converter.pipeline import ConversionEngine, collect_audio_files
+from music_converter.skill_install import (
+    SkillInstallError,
+    install_skill_targets,
+    result_payload,
+)
 
 
 def _json_print(payload: dict[str, Any]) -> None:
@@ -193,6 +198,35 @@ def _print_text_result(result: ConversionResult) -> None:
         print(f"  警告：{warning}")
 
 
+def _install_skill(args: argparse.Namespace) -> int:
+    """Install the shared Skill for selected harnesses."""
+    try:
+        results = install_skill_targets(
+            args.target,
+            scope=args.scope,
+        )
+    except SkillInstallError as exc:
+        if args.json:
+            _json_print({"event": "error", "message": str(exc)})
+        else:
+            print(str(exc), file=sys.stderr)
+        return 2
+
+    payload = {
+        "event": "skill_install",
+        "scope": args.scope,
+        "results": result_payload(results),
+    }
+    if args.json:
+        _json_print(payload)
+    else:
+        for item in results:
+            print(f"{item.target}: {item.destination}")
+            if item.backup:
+                print(f"  旧版本备份：{item.backup}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Create the command-line argument parser."""
     parser = argparse.ArgumentParser(
@@ -243,6 +277,25 @@ def build_parser() -> argparse.ArgumentParser:
     convert.add_argument("--dry-run", action="store_true", help="只输出计划，不转换")
     convert.add_argument("--json", action="store_true", help="输出 JSON Lines")
     convert.set_defaults(func=_convert)
+
+    skill = subparsers.add_parser("skill", help="安装或管理 Agent Skill")
+    skill_commands = skill.add_subparsers(dest="skill_command", required=True)
+    skill_install = skill_commands.add_parser("install", help="安装 Skill 到指定 Harness")
+    skill_install.add_argument(
+        "--target",
+        action="append",
+        choices=["codex", "deepseek", "claude", "all"],
+        required=True,
+        help="可重复指定目标；all 安装全部",
+    )
+    skill_install.add_argument(
+        "--scope",
+        choices=["user", "project"],
+        default="user",
+        help="安装到用户目录或当前项目",
+    )
+    skill_install.add_argument("--json", action="store_true", help="输出 JSON")
+    skill_install.set_defaults(func=_install_skill)
     return parser
 
 

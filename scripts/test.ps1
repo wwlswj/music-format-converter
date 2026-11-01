@@ -15,7 +15,7 @@ try {
     if ($LASTEXITCODE -ne 0) {
         exit $LASTEXITCODE
     }
-    & (Join-Path $projectRoot ".venv\Scripts\ruff.exe") check src tests app.py launcher.py scripts
+    & (Join-Path $projectRoot ".venv\Scripts\ruff.exe") check src tests app.py launcher.py scripts packaging
     if ($LASTEXITCODE -ne 0) {
         exit $LASTEXITCODE
     }

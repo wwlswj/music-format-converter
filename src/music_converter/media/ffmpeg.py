@@ -12,6 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
+from music_converter.config import application_root
 from music_converter.models import TrackMetadata
 
 ProgressCallback = Callable[[float], None]
@@ -86,7 +87,7 @@ class ToolPaths:
     @classmethod
     def discover(cls, explicit_root: str | Path | None = None) -> ToolPaths:
         """Find tools in the project, environment variables, or PATH."""
-        project_root = Path(__file__).resolve().parents[3]
+        project_root = application_root()
         root = Path(explicit_root).resolve() if explicit_root else project_root
         ffmpeg_candidates = [
             root / "tools" / "ffmpeg" / "bin" / "ffmpeg.exe",

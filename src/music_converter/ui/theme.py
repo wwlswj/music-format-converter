@@ -19,6 +19,8 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QApplication, QWidget
 
+from music_converter.config import resource_root
+
 COLORS = {
     "paper": "#F4EFE4",
     "paper_light": "#FBF8F1",
@@ -406,6 +408,6 @@ def make_app_icon() -> QIcon:
 
 
 def project_root() -> Path:
-    """Return the source-checkout project root."""
-    return Path(__file__).resolve().parents[3]
+    """Return the source or PyInstaller resource root."""
+    return resource_root()
 
