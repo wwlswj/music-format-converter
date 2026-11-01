@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VERSION="${SHAOLV_VERSION:-0.2.0}"
+VERSION="${SHAOLV_VERSION:-0.2.1}"
 BUILD_ROOT="${PROJECT_ROOT}/build/linux"
 DIST_ROOT="${PROJECT_ROOT}/dist/linux"
 ARTIFACT_ROOT="${PROJECT_ROOT}/artifacts"
