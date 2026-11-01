@@ -16,7 +16,7 @@ if (-not (Test-Path -LiteralPath $venvPython)) {
 
 Write-Host "安装或修复 Python 依赖…"
 & $venvPython -m pip install --upgrade pip
-& $venvPython -m pip install -e "$projectRoot[dev]"
+& $venvPython -m pip install -e "${projectRoot}[dev]"
 & $venvPython -m pip check
 
 & (Join-Path $projectRoot "scripts\install_media_tools.ps1")
