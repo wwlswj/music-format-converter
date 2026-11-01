@@ -1,0 +1,8 @@
+interface:
+  display_name: "韶律音乐转换"
+  short_description: "批量转换音乐与 NCM，整理命名并匹配 LRC 歌词"
+  brand_color: "#E2B84E"
+  default_prompt: "Use $music-format-converter to convert my music files in batches with the requested format, naming, folder, and lyrics settings."
+policy:
+  allow_implicit_invocation: true
+

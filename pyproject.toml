@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "music-format-converter"
+version = "0.1.2"
+description = "Batch audio and NetEase NCM converter with a Windows 11 inspired PySide6 interface."
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "Wanli Wang" }]
+dependencies = [
+  "PySide6==6.12.0",
+  "mutagen==1.48.1",
+  "httpx==0.28.1",
+  "rapidfuzz==3.14.6",
+  "Pillow==13.0.0",
+  "pycryptodome==4.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.2.0",
+  "pytest-qt==4.5.0",
+  "PyYAML==6.0.3",
+  "ruff==0.17.3",
+]
+
+[project.scripts]
+music-converter = "music_converter.cli:main"
+music-converter-gui = "music_converter.ui.main_window:main"
+
+[project.urls]
+Repository = "https://github.com/wwlswj/music-format-converter"
+Issues = "https://github.com/wwlswj/music-format-converter/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
