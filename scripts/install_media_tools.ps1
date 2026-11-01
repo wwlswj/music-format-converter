@@ -11,13 +11,13 @@ if ((Test-Path -LiteralPath $ffmpeg) -and (Test-Path -LiteralPath $ffprobe)) {
 }
 
 $version = "9.0.2"
-$archiveUrl = "https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-$version-essentials_build.zip"
-$expectedArchiveHash = "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba"
+$archiveUrl = "https://github.com/GyanD/codexffmpeg/releases/download/$version/ffmpeg-$version-essentials_build.7z"
+$expectedArchiveHash = "4705843ccaaf54257c16ad90f3e952ece33c17df964ecf7bfdbb0f49c7171077"
 $expectedFfmpegHash = "3256173F3F8BFFD7DF12227C68ADF68025EDB1832273A9530688A7BB1ED8EDEC"
 $expectedFfprobeHash = "F0D36ECBBDD3BCFAC3EFA078C96C7271C2E68B3810595552AC3B7F17E9A65C52"
 
 $tempRoot = Join-Path $projectRoot ".tmp\media-tools"
-$archive = Join-Path $tempRoot "ffmpeg-$version.zip"
+$archive = Join-Path $tempRoot "ffmpeg-$version.7z"
 $extractRoot = Join-Path $tempRoot "ffmpeg-extracted"
 New-Item -ItemType Directory -Force -Path $tempRoot, $binRoot | Out-Null
 
@@ -27,8 +27,22 @@ if (-not $resolvedTemp.StartsWith($resolvedProject + [System.IO.Path]::Directory
     throw "Refusing to clean a temporary directory outside the project."
 }
 
-Write-Host "Downloading FFmpeg $version..."
-Invoke-WebRequest -Uri $archiveUrl -OutFile $archive
+$archiveReady = $false
+if (Test-Path -LiteralPath $archive) {
+    $existingHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash.ToLowerInvariant()
+    $archiveReady = $existingHash -eq $expectedArchiveHash
+    if (-not $archiveReady) {
+        Remove-Item -LiteralPath $archive -Force
+    }
+}
+if (-not $archiveReady) {
+    Write-Host "Downloading FFmpeg $version..."
+    & curl.exe --fail --location --retry 3 --retry-delay 2 --silent --show-error `
+        --output $archive $archiveUrl
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to download FFmpeg archive."
+    }
+}
 $actualArchiveHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash.ToLowerInvariant()
 if ($actualArchiveHash -ne $expectedArchiveHash) {
     throw "FFmpeg archive checksum mismatch."
@@ -37,7 +51,17 @@ if ($actualArchiveHash -ne $expectedArchiveHash) {
 if (Test-Path -LiteralPath $extractRoot) {
     Remove-Item -LiteralPath $extractRoot -Recurse -Force
 }
-Expand-Archive -LiteralPath $archive -DestinationPath $extractRoot -Force
+New-Item -ItemType Directory -Force -Path $extractRoot | Out-Null
+Push-Location $extractRoot
+try {
+    & tar.exe -xf "..\ffmpeg-$version.7z"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to extract the FFmpeg archive."
+    }
+}
+finally {
+    Pop-Location
+}
 $sourceFfmpeg = Get-ChildItem -LiteralPath $extractRoot -Recurse -Filter "ffmpeg.exe" |
     Where-Object { $_.DirectoryName -like "*\bin" } |
     Select-Object -First 1
