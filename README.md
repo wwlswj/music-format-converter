@@ -1,6 +1,6 @@
 # 韶律 · 音乐格式转换器
 
-基于 PySide6 和 FFmpeg 的本地批量音乐转换器，重点支持网易云音乐 `.ncm` 文件、320 kbps MP3 输出、歌手-歌曲名重命名、分类目录及 LRC 歌词匹配。
+基于 PySide6 和 FFmpeg 的本地批量音乐转换器，重点支持 `.ncm` 格式、320 kbps MP3 输出、歌手-歌曲名重命名、分类目录及 LRC 歌词匹配。
 
 [![Tests](https://github.com/wwlswj/music-format-converter/actions/workflows/tests.yml/badge.svg)](https://github.com/wwlswj/music-format-converter/actions/workflows/tests.yml)
 
